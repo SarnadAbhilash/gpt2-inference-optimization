@@ -19,6 +19,8 @@ GPT-2) from the GELU fusion. The LayerNorm kernel was *correct and faster in a
 microbenchmark* but **made the full model slower** — so it was dropped after
 ablation. That decision is the most useful part of this repo.
 
+![End-to-end ablation — only the GELU fusion helps; the LayerNorm fusion regresses](results/end2end_ablation.png)
+
 ## The story: identify → fix → verify
 
 1. **Identify.** Profiled GPT-2 decode. Two findings overturned the plan:
@@ -29,6 +31,8 @@ ablation. That decision is the most useful part of this repo.
      original "fuse softmax first" idea was dropped.
    - Real fusable targets: **LayerNorm** (8%) and **GELU** (4%, and GPT-2 runs it
      as ~6 separate kernels).
+
+   ![Where GPT-2 decode spends GPU time — blue is compute (hard to beat), red is memory-bound ops we can fuse](results/profile_before.png)
 
 2. **Fix.** Wrote fused Triton kernels for LayerNorm and GELU; verified each
    bit-correct and microbenchmarked (GELU hits 907 GB/s ≈ 90% of the 4090's
