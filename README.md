@@ -19,7 +19,7 @@ GPT-2) from the GELU fusion. The LayerNorm kernel was *correct and faster in a
 microbenchmark* but **made the full model slower** — so it was dropped after
 ablation. That decision is the most useful part of this repo.
 
-## The story: identify → fix → prove
+## The story: identify → fix → verify
 
 1. **Identify.** Profiled GPT-2 decode. Two findings overturned the plan:
    - The GPU is **idle ~87%** of the time — only 0.72 ms/token of actual GPU work
@@ -34,21 +34,12 @@ ablation. That decision is the most useful part of this repo.
    bit-correct and microbenchmarked (GELU hits 907 GB/s ≈ 90% of the 4090's
    memory ceiling).
 
-3. **Prove.** Patched them into HuggingFace GPT-2 and measured real tokens/sec,
+3. **Verify.** Patched them into HuggingFace GPT-2 and measured real tokens/sec,
    with an ablation to see which kernel actually helped:
    - **GELU fusion → +12.5%** (GPT-2's GELU was genuinely unfused).
    - **LayerNorm fusion → −11%** (PyTorch already fuses it; our wrapper overhead
      cost more than it saved).
    - Fusion cut **kernel launches/token from 487 → 268**.
-
-## Key takeaways
-
-- **Op-level microbenchmarks can mislead.** A 7×-faster op moved the model only
-  +12.5%; a "1.1–1.4× faster" op made it *slower*. Only end-to-end counts — and
-  you must ablate.
-- **Don't re-fight battles the framework already won** (LayerNorm, softmax).
-- At batch=1 the model is launch-overhead-bound; the next big lever is CUDA
-  graphs / `torch.compile`, not faster kernels.
 
 ## Layout
 
