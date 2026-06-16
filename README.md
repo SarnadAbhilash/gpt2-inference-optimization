@@ -2,8 +2,7 @@
 
 Profiling GPT-2 inference, finding the real bottlenecks, and replacing them with
 custom fused [Triton](https://github.com/triton-lang/triton) kernels — each
-verified **bit-correct** against PyTorch and measured **end-to-end**, not just in
-isolation.
+verified **bit-correct** against PyTorch and measured **end-to-end**.
 
 ## TL;DR
 
@@ -17,7 +16,7 @@ Decoding GPT-2 small (batch=1, fp16) on a single **RTX 4090**:
 **Result: a verified +12.5% end-to-end speedup** (output bit-identical to stock
 GPT-2) from the GELU fusion. The LayerNorm kernel was *correct and faster in a
 microbenchmark* but **made the full model slower** — so it was dropped after
-ablation. That decision is the most useful part of this repo.
+ablation.
 
 ![End-to-end ablation — only the GELU fusion helps; the LayerNorm fusion regresses](results/end2end_ablation.png)
 
