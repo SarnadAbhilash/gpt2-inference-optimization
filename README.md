@@ -1,4 +1,4 @@
-# inference-optimizer
+# GPT-2 Inference Optimization
 
 Profiling GPT-2 inference, finding the real bottlenecks, and replacing them with
 custom fused [Triton](https://github.com/triton-lang/triton) kernels — each
