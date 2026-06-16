@@ -66,7 +66,7 @@ results/               # measurements + charts for each step
 
 ## Run
 
-Needs an NVIDIA GPU (developed on an RTX 4090). Triton does not run on macOS.
+Needs an NVIDIA GPU (developed on an RTX 4090).
 
 ```bash
 pip install -r requirements.txt
